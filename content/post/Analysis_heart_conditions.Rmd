@@ -223,11 +223,18 @@ print(MSE.nn)
 # We now plot our results
 par(mfrow=c(1,2))
 plot(test$Diagnosis,Results_of_Neural_Network, col='blue',main='Real vs predicted NN',pch=18,cex=0.7)
-abline(-1,1,lwd=2)
+abline(0,1,lwd=2)
 legend('bottomright',legend='Neural Network',pch=18,col='blue', bty='n')
 ```
 
 .
+
+The results, as you can see, were not good. The first indicator of this was the Means Squared Error (MSE). The MSE is defined as "the mean squared error (MSE) or mean squared deviation (MSD) of an estimator (of a procedure for estimating an unobserved quantity) measures the average of the squares of the errors or deviations—that is, the difference between the estimator and what is estimated." In simpler terms, its an average measure of how far wrong each point was from its predicted value. Our MSE is approxiamtely 30% of our total range. In addition to this, the plot is wildly different to what an accurate plot would look like. As the Diagnosis values are discrete, we obviously expect the X values to be 0, 1, 2, 3 or 4, which is what we see. The difference is in the Y values. If the model was accurate, we would see small bundles of points around the co-ordinates (0,0), (1,1), (2,2), (3,3) and (4,4), which would all lie in the straight line y = x. Our actual output shows the Y values to be scattered all over the place, regardless of the X value. Though there is a slight tendency for the Y values to increase as the X ones do, indicating a correaltion, it is extremely slight and definitely not significant enough for us to accept this as an acceptable model. 
+
+.
+
+Despite, or maybe because, all three of my models completely failed to model my dataset, I still feel that I learnt an invaluable lesson. It is that some data sets are simply too tough to fit using the fairly simplistic methods used in this blog post. The real world is complicated and there are clearly a lot more underlying factors and interconnectedness going on in this data set than I had naively assumed at the start of the project. That, or I just picked a really shit data set... who knows?? These sorts of things are as much art as they are science and someti
+
 
 
 
