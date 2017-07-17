@@ -1,5 +1,5 @@
 ---
-title: Second New Post (in R Markdown)
+title: Why Data Scientists aren't Doctors!
 author: ~
 date: '2017-07-17'
 slug: second-new-post-in-r-markdown
@@ -7,4 +7,160 @@ categories: []
 tags: []
 ---
 
-R markdown post
+This is an analysis of heart conditions
+
+```{r, echo=FALSE}
+summary(cars)
+fit <- lm(dist ~ speed, data = cars)
+fit
+```
+
+
+```{r}
+### An analysis of heart disease correalted with 13 factors done with rpart and the bagging technique
+
+library(rvest)
+library(stringr)
+library(dplyr)
+library(rpart)
+library(caret)
+library(vcdExtra)
+library(ipred)
+library(neuralnet)
+
+
+#-------------------------------Getting and processing our data----------------------------------------------
+# Scrapes the data
+raw_data <- read_html("https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data") %>%  #reads the the data from this page
+  html_nodes("body") %>%      #just takes the node labelled table                  #finds the first element of this node
+  html_text()
+
+# Turns the data into a list 
+no_n <- gsub("\n", " ,", raw_data)
+row_data <- strsplit(no_n, ",")
+
+
+data <- data.frame(matrix(unlist(row_data), nrow=303, byrow=T))
+
+colnames(data)[1] <- "Age"
+colnames(data)[2] <- "Sex"
+colnames(data)[3] <- "Chest_Pain"
+colnames(data)[4] <- "Blood_Pressure"
+colnames(data)[5] <- "Cholestoral"
+colnames(data)[6] <- "Blood_Sugar"
+colnames(data)[7] <- "ecg"
+colnames(data)[8] <- "Max_Heart_Rate"
+colnames(data)[9] <- "eia"
+colnames(data)[10] <- "Exercise_induced_feelings"
+colnames(data)[11] <- "Slope_of_ST"
+colnames(data)[12] <- "Fluoroscopy_stain"
+colnames(data)[13] <- "Thal"
+colnames(data)[14] <- "Diagnosis"
+
+#taking away all non useful cells
+data[ data == "?" ] <- NA
+data <- na.omit(data)
+
+
+View(data)
+#------------------------------------Training our model-----------------------------------------------------
+
+# Splitting the data into training and testing sets
+
+index <- sample(1:nrow(data),round(0.75*nrow(data)))
+
+train <- data[index,]
+test <- data[-index,]
+
+# We then train our model using the training data set 
+data.rpart <- train(Diagnosis ~ ., data = train, method = "rpart")
+# We can look at the details of our model here
+data.rpart
+# We can look at the decision tree here
+data.rpart$finalModel
+
+
+
+#---------------------------------Testing the rpart model and looking at output------------------------------------
+
+predict(data.rpart, test)
+
+confusionMatrix(predict(data.rpart, test), test$Diagnosis)
+
+#----------------------------------------Bagging--------------------------------------------------------------
+
+# We first bag the model 1000 times 
+#data.bagging <- bagging(Diagnosis ~ . , data = train, nbagg = 1)
+#This doesn't seem to be working 
+
+#predict(data.bagging, test)
+
+#confusionMatrix(data = predict(data.bagging, test), reference = test$Diagnosis)
+
+#---------------------------------Using a Logistics model----------------------------------------------------
+
+#We first turn the data into a numeric dataframe and get new training and testing sets
+data <- as.data.frame(sapply(data, as.numeric))
+index <- sample(1:nrow(data),round(0.75*nrow(data)))
+train <- data[index,]
+test <- data[-index,]
+
+
+logistic <- glm(Diagnosis ~ . , data = train)
+summary(logistic)
+plot(logistic)
+
+
+
+#-----------------------------Using a neural network---------------------------------------------------------
+
+#We first take away all superfluous data points to simplify our model
+data$Age = NULL
+data$Sex = NULL
+data$Blood_Pressure = NULL
+data$Cholestoral = NULL
+data$ecg = NULL
+data$Blood_Sugar = NULL
+data$Max_Heart_Rate = NULL
+data$eia = NULL
+
+
+# Normalize data. Different methods can be used (z-normalization, min-max). 
+# We use the min-max method and scale the data in interval [0, 1]
+maxs <- apply(data, 2, max)
+mins <- apply(data, 2, min)
+
+scaled <- as.data.frame(scale(data, center = TRUE, scale = maxs - mins))
+head(scaled)
+
+train.scaled <- scaled[index,]
+test.scaled <- scaled[-index,]
+
+# We now train the model
+names <- names(train.scaled)
+names.all <- as.formula(paste("Diagnosis ~", paste(names[!names %in% "Diagnosis"], collapse = " + ")))
+nn <- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
+plot(nn)
+
+
+# We compute our test data with the model  
+pr.nn <- compute(nn,test.scaled[ ,1:5])      
+#head(pr.nn)
+
+
+# We undo the normalization by scaling it back up and then calculate 
+# the Means Squared error
+pr.nn_ <- pr.nn$net.result*(max(data$Diagnosis)-min(data$Diagnosis))+min(data$Diagnosis)
+test.r <- (test.scaled$Diagnosis)*(max(data$Diagnosis)-min(data$Diagnosis))+min(data$Diagnosis)
+pr.nn_
+
+MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test.scaled)
+print(MSE.nn)
+
+
+# We now plot our results
+par(mfrow=c(1,2))
+plot(test$Diagnosis,pr.nn_, col='blue',main='Real vs predicted NN',pch=18,cex=0.7)
+abline(-1,1,lwd=2)
+legend('bottomright',legend='Neural Network',pch=18,col='blue', bty='n')
+```
