@@ -1,0 +1,83 @@
+---
+title: Why Data Scientists aren't Doctors!
+author: ~
+date: '2017-07-17'
+slug: second-new-post-in-r-markdown
+categories: []
+tags: []
+---
+
+Technology is advancing at an unbelievable rate, and one of the most exciting, not to mention important, fields that is benefitting from this is the field of Medicine. From CAT scans to cancer cures, science and technology is making the impossible possible with treatments and procedures so advanced and effective, they almost border on the mythical. There are however some drawbacks. One of the most common ones that is joked around the proverbial water-cooler is self diagnosis using technology. In this day and age, if you tell someone that you've got a sore throat and feel a little under the weather, you'll most likely be told "Don't Google your symptoms, it'll probably say you're pregnant!" 
+
+As a prospective data scientist, I find this situation worrying, if not highly offensive... How is it possible that we aren't able to accurately diagnose ourselves using the same advanced techniques that can effectively model the stock market, crime rates and pokemon cards?! And so, when the opportunity arose to find a data set, build a functional model and then use it to analyse said data set came up, I took it with both hands. 
+
+The first thing I had to do was to find some usable data. I settled on a set of just over 300 diagnoses of heart conditions, along with 13 possible factors sucg as age, max heart rate achieved under exercise and an ecg reading. These were factors that I expected to be highly correlated with heart conditions, and so expected a good model. If you are curious, you can find the data [here](https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data).
+
+If you check out that link, you will see that it just leads to a bunch of numbers on a screen. I therefrore had to webscrape and then format the data (a decent amount of work given my relative inexperience in the field), which was done with the code below (we of course also have to load our packages first). 
+
+
+
+```{r, include=FALSE}
+library(rvest)
+library(stringr)
+library(dplyr)
+library(rpart)
+library(caret)
+library(vcdExtra)
+library(ipred)
+library(neuralnet)
+library(magrittr)
+```
+
+```{r}
+#------------------------------Getting and processing our data----------------------------------------------
+# Scrapes the data
+raw_data <- read_html("https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data") %>%  #reads the the data from this page
+  html_nodes("body") %>%      #just takes the node labelled table                  #finds the first element of this node
+  html_text()
+
+# Turns the data into a list 
+no_n <- gsub("\n", " ,", raw_data)
+row_data <- strsplit(no_n, ",")
+
+
+data <- data.frame(matrix(unlist(row_data), nrow=303, byrow=T))
+
+colnames(data)[1] <- "Age"
+colnames(data)[2] <- "Sex"
+colnames(data)[3] <- "Chest_Pain"
+colnames(data)[4] <- "Blood_Pressure"
+colnames(data)[5] <- "Cholestoral"
+colnames(data)[6] <- "Blood_Sugar"
+colnames(data)[7] <- "ecg"
+colnames(data)[8] <- "Max_Heart_Rate"
+colnames(data)[9] <- "eia"
+colnames(data)[10] <- "Exercise_induced_feelings"
+colnames(data)[11] <- "Slope_of_ST"
+colnames(data)[12] <- "Fluoroscopy_stain"
+colnames(data)[13] <- "Thal"
+colnames(data)[14] <- "Diagnosis"
+
+#taking away all non useful cells
+data[ data == "?" ] <- NA
+data <- na.omit(data)
+
+
+head(data)
+```
+
+
+As you can see, the data comes out nicely in a data frame. Note that I have taken away all cells that contained "?" (there were a couple) as these would have messed up my models later. 
+
+I looked at this data in several ways. The first of these was using a decision tree. This however had an added layer of complexity as I ran it with the Caret package. This not only meant that it was easier to code, but had the added bonuses of bootstrapping the data 25 times and giving me a very nice output of results, which are shown below. 
+
+
+
+
+
+
+
+
+
+
+
