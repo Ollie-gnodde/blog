@@ -17,7 +17,7 @@ Full disclosure... I have included the entire code (except for the part about th
 .
 
 
-The first thing I had to do was to find some usable data. I settled on a set of just over 300 diagnoses of heart conditions, along with 13 possible factors sucg as age, max heart rate achieved under exercise and an ecg reading. These were factors that I expected to be highly correlated with heart conditions, and so expected a good model. If you are curious, you can find the data [here](https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data). The data is all numeric, so the heart diseases are ranked on a scale from 0 to 4, where 0 is completely healthy and 4 is an impending heart-attack. 
+The first thing I had to do was to find some usable data. I settled on a set of just over 300 diagnoses of heart conditions, along with 13 possible factors sucg as age, max heart rate achieved under exercise and an ecg reading. These were factors that I expected to be highly correlated with heart conditions, and so expected a good model. If you are curious, you can find the data *[here](https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data)*. The data is all numeric, so the heart diseases are ranked on a scale from 0 to 4, where 0 is completely healthy and 4 is an impending heart-attack. 
 
 .
 
@@ -167,7 +167,7 @@ The first thing that we see when we examine the summary is that not all of our f
 
 .
 
-I was less happy with the plots. As you can see, the model struggled to successfully model the data points. I was not discouraged however, as I had one more trick up my sleeve... the Neural Network. The Neural Network is a more advanced model that is based upon the human brain. It uses things artificial neurons that act like  real neurons to create models that are exceptionally good at tasks that other models are traditionally not good at, like identifying hand-writing. I won't go into how the model works, but if you are interested, you can read up on it [here](https://en.wikipedia.org/wiki/Artificial_neural_network).
+I was less happy with the plots. As you can see, the model struggled to successfully model the data points. I was not discouraged however, as I had one more trick up my sleeve... the Neural Network. The Neural Network is a more advanced model that is based upon the human brain. It uses things artificial neurons that act like  real neurons to create models that are exceptionally good at tasks that other models are traditionally not good at, like identifying hand-writing. I won't go into how the model works, but if you are interested, you can read up on it *[here](https://en.wikipedia.org/wiki/Artificial_neural_network).*
 
 .
 
@@ -204,7 +204,7 @@ names.all <- as.formula(paste("Diagnosis ~", paste(names[!names %in% "Diagnosis"
 nn <- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
 plot(nn)
 ```
-!(neural_networks.png)
+!(neural_network.png)
 ```{r}
 # We compute our test data with the model  
 pr.nn <- compute(nn,test.scaled[ ,1:5])      
@@ -233,7 +233,15 @@ The results, as you can see, were not good. The first indicator of this was the 
 
 .
 
-Despite, or maybe because, all three of my models completely failed to model my dataset, I still feel that I learnt an invaluable lesson. It is that some data sets are simply too tough to fit using the fairly simplistic methods used in this blog post. The real world is complicated and there are clearly a lot more underlying factors and interconnectedness going on in this data set than I had naively assumed at the start of the project. That, or I just picked a really shit data set... who knows?? These sorts of things are as much art as they are science and someti
+Despite, or maybe because, all three of my models completely failed to model my dataset, I still feel that I learnt an invaluable lesson. It is that some data sets are simply too tough to fit using the fairly simplistic methods used in this blog post. The real world is complicated and there are clearly a lot more underlying factors and interconnectedness going on in this data set than I had naively assumed at the start of the project. That, or I just picked a really shit data set... who knows?? These sorts of things are as much art as they are science and sometimes art requires a couple of attempts before it becomes something beautiful. 
+
+.
+
+And so, I wasn't able to solve the "Google your symptoms" problem in one afternoon. Doctors 1, Data-Scientists 0. However, I do think that with a better data set and possibly a slightly different method, it would be possible to get pretty close. That however is a project for another blog post, as I am signing off this one. 
+
+.
+
+Till next time, you stay classy San Diego. 
 
 
 
