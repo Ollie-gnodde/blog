@@ -108,13 +108,13 @@ data.rpart</code></pre>
 ## Summary of sample sizes: 223, 223, 223, 223, 223, 223, ... 
 ## Resampling results across tuning parameters:
 ## 
-##   cp          Accuracy   Kappa    
-##   0.03669725  0.5267398  0.2207780
-##   0.04587156  0.5215077  0.2127531
-##   0.05963303  0.5171869  0.2123543
+##   cp     Accuracy   Kappa    
+##   0.030  0.5764883  0.2601828
+##   0.035  0.5779894  0.2579997
+##   0.070  0.5729358  0.1925289
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
-## The final value used for the model was cp = 0.03669725.</code></pre>
+## The final value used for the model was cp = 0.035.</code></pre>
 <pre class="r"><code># We can look at the decision tree here
 data.rpart$finalModel</code></pre>
 <pre><code>## n= 223 
@@ -122,53 +122,51 @@ data.rpart$finalModel</code></pre>
 ## node), split, n, loss, yval, (yprob)
 ##       * denotes terminal node
 ## 
-##  1) root 223 109 0  (0.51 0.21 0.12 0.12 0.045)  
-##    2) Thal3.0&gt;=0.5 121  30 0  (0.75 0.16 0.05 0.033 0.0083) *
-##    3) Thal3.0&lt; 0.5 102  74 1  (0.23 0.27 0.2 0.22 0.088)  
-##      6) Fluoroscopy_stain0.0&gt;=0.5 45  26 0  (0.42 0.31 0.067 0.13 0.067) *
-##      7) Fluoroscopy_stain0.0&lt; 0.5 57  40 2  (0.07 0.25 0.3 0.28 0.11)  
-##       14) Fluoroscopy_stain1.0&gt;=0.5 26  16 1  (0.077 0.38 0.31 0.15 0.077) *
-##       15) Fluoroscopy_stain1.0&lt; 0.5 31  19 3  (0.065 0.13 0.29 0.39 0.13) *</code></pre>
+## 1) root 223 100 0  (0.55 0.17 0.13 0.11 0.045)  
+##   2) Chest_Pain4.0&lt; 0.5 114  23 0  (0.8 0.11 0.026 0.044 0.018) *
+##   3) Chest_Pain4.0&gt;=0.5 109  77 0  (0.29 0.23 0.23 0.17 0.073)  
+##     6) Fluoroscopy_stain0.0&gt;=0.5 55  26 0  (0.53 0.2 0.15 0.11 0.018) *
+##     7) Fluoroscopy_stain0.0&lt; 0.5 54  37 2  (0.056 0.26 0.31 0.24 0.13) *</code></pre>
 <pre class="r"><code>#--------------------------Testing the rpart model and looking at output---------------------------------
 
 predict(data.rpart, test)</code></pre>
-<pre><code>##  [1] 3  0  0  0  1  0  0  0  0  0  3  0  0  0  0  0  0  1  0  0  0  0  0 
-## [24] 3  1  0  0  0  0  3  1  0  1  0  1  0  0  0  3  0  0  0  0  0  1  0 
-## [47] 0  0  0  0  0  3  1  0  0  0  0  0  0  0  0  0  0  1  3  0  0  0  0 
-## [70] 1  0  0  0  0 
+<pre><code>##  [1] 2  0  2  0  0  0  2  2  0  2  2  0  2  2  0  0  0  2  0  2  2  0  0 
+## [24] 2  0  2  2  0  0  0  0  0  0  0  0  2  2  0  0  0  0  0  0  2  0  0 
+## [47] 0  0  0  0  0  0  0  0  0  0  2  0  2  0  0  2  0  0  0  2  2  0  0 
+## [70] 0  0  0  2  0 
 ## Levels: 0  1  2  3  4</code></pre>
 <pre class="r"><code>confusionMatrix(predict(data.rpart, test), test$Diagnosis)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction 0  1  2  3  4 
-##         0  44  4  4  4  1
-##         1   2  2  4  2  0
-##         2   0  0  0  0  0
-##         3   0  1  1  3  2
+##         0  35 10  3  2  1
+##         1   0  0  0  0  0
+##         2   2  6  4  9  2
+##         3   0  0  0  0  0
 ##         4   0  0  0  0  0
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.6622          
-##                  95% CI : (0.5428, 0.7681)
-##     No Information Rate : 0.6216          
-##     P-Value [Acc &gt; NIR] : 0.2768          
+##                Accuracy : 0.527           
+##                  95% CI : (0.4075, 0.6443)
+##     No Information Rate : 0.5             
+##     P-Value [Acc &gt; NIR] : 0.3638          
 ##                                           
-##                   Kappa : 0.3201          
+##                   Kappa : 0.2445          
 ##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: 0  Class: 1  Class: 2  Class: 3  Class: 4 
-## Sensitivity             0.9565   0.28571    0.0000   0.33333   0.00000
-## Specificity             0.5357   0.88060    1.0000   0.93846   1.00000
-## Pos Pred Value          0.7719   0.20000       NaN   0.42857       NaN
-## Neg Pred Value          0.8824   0.92188    0.8784   0.91045   0.95946
-## Prevalence              0.6216   0.09459    0.1216   0.12162   0.04054
-## Detection Rate          0.5946   0.02703    0.0000   0.04054   0.00000
-## Detection Prevalence    0.7703   0.13514    0.0000   0.09459   0.00000
-## Balanced Accuracy       0.7461   0.58316    0.5000   0.63590   0.50000</code></pre>
+## Sensitivity             0.9459    0.0000   0.57143    0.0000   0.00000
+## Specificity             0.5676    1.0000   0.71642    1.0000   1.00000
+## Pos Pred Value          0.6863       NaN   0.17391       NaN       NaN
+## Neg Pred Value          0.9130    0.7838   0.94118    0.8514   0.95946
+## Prevalence              0.5000    0.2162   0.09459    0.1486   0.04054
+## Detection Rate          0.4730    0.0000   0.05405    0.0000   0.00000
+## Detection Prevalence    0.6892    0.0000   0.31081    0.0000   0.00000
+## Balanced Accuracy       0.7568    0.5000   0.64392    0.5000   0.50000</code></pre>
 <p>.</p>
 <p>Looking at the output of the code, we see that we have 223 samples for the training set, with 13 predictors and 5 classes. This all sounds good. One interesting aspect of the rpart model is that it is able to give us different complexity parameters and their subsequent accuracy is used in the model. The complexity parameter is effectively a measurement of how deep your decision tree is. If this doesn’t make sense, I suggest doing some background reading on it. We see which complexity parameter gives us the highest level of accuracy, which can be seen to be worryingly low here. Not to worry however, as we haven’t tested the model yet. We can also have a look at the decision tree if we wish to.</p>
 <p>.</p>
@@ -194,33 +192,33 @@ summary(logistic)</code></pre>
 ## glm(formula = Diagnosis ~ ., data = train)
 ## 
 ## Deviance Residuals: 
-##      Min        1Q    Median        3Q       Max  
-## -2.14617  -0.49632  -0.09834   0.28568   2.80767  
+##     Min       1Q   Median       3Q      Max  
+## -2.3857  -0.4744  -0.0585   0.4012   2.4653  
 ## 
 ## Coefficients:
 ##                             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)               -1.7291298  0.4929731  -3.508 0.000554 ***
-## Age                       -0.0113364  0.0074008  -1.532 0.127085    
-## Sex                        0.1521410  0.1330508   1.143 0.254147    
-## Chest_Pain                 0.1827598  0.0702621   2.601 0.009956 ** 
-## Blood_Pressure             0.0032874  0.0055633   0.591 0.555218    
-## Cholestoral                0.0001243  0.0015599   0.080 0.936540    
-## Blood_Sugar                0.0981886  0.1655159   0.593 0.553670    
-## ecg                        0.0666642  0.0598035   1.115 0.266250    
-## Max_Heart_Rate            -0.0040355  0.0032895  -1.227 0.221286    
-## eia                        0.2141855  0.1381934   1.550 0.122679    
-## Exercise_induced_feelings  0.0203465  0.0074881   2.717 0.007136 ** 
-## Slope_of_ST                0.1682030  0.1177772   1.428 0.154743    
-## Fluoroscopy_stain          0.5159553  0.0685620   7.525 1.54e-12 ***
-## Thal                       0.2655519  0.0703287   3.776 0.000208 ***
+## (Intercept)               -2.3310062  0.4888306  -4.769 3.48e-06 ***
+## Age                       -0.0022896  0.0074120  -0.309 0.757700    
+## Sex                        0.2909961  0.1340940   2.170 0.031128 *  
+## Chest_Pain                 0.1903944  0.0641811   2.967 0.003363 ** 
+## Blood_Pressure             0.0035302  0.0052365   0.674 0.500968    
+## Cholestoral                0.0007734  0.0015134   0.511 0.609868    
+## Blood_Sugar               -0.0591353  0.1563128  -0.378 0.705581    
+## ecg                        0.0517031  0.0562955   0.918 0.359455    
+## Max_Heart_Rate            -0.0003148  0.0031448  -0.100 0.920366    
+## eia                        0.3243484  0.1368840   2.370 0.018722 *  
+## Exercise_induced_feelings  0.0254096  0.0068618   3.703 0.000273 ***
+## Slope_of_ST                0.2501769  0.1114228   2.245 0.025796 *  
+## Fluoroscopy_stain          0.4140506  0.0659603   6.277 1.96e-09 ***
+## Thal                       0.2927252  0.0699408   4.185 4.19e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## (Dispersion parameter for gaussian family taken to be 0.6910157)
+## (Dispersion parameter for gaussian family taken to be 0.6573012)
 ## 
-##     Null deviance: 326.85  on 222  degrees of freedom
-## Residual deviance: 144.42  on 209  degrees of freedom
-## AIC: 565.97
+##     Null deviance: 333.38  on 222  degrees of freedom
+## Residual deviance: 137.38  on 209  degrees of freedom
+## AIC: 554.81
 ## 
 ## Number of Fisher Scoring iterations: 2</code></pre>
 <pre class="r"><code>plot(logistic)</code></pre>
@@ -259,7 +257,10 @@ names &lt;- names(train.scaled)
 names.all &lt;- as.formula(paste(&quot;Diagnosis ~&quot;, paste(names[!names %in% &quot;Diagnosis&quot;], collapse = &quot; + &quot;)))
 nn &lt;- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
 plot(nn)</code></pre>
-<p>!(neural_network.png)</p>
+<div class="figure">
+<img src="neural_network.png" />
+
+</div>
 <pre class="r"><code># We compute our test data with the model  
 pr.nn &lt;- compute(nn,test.scaled[ ,1:5])      
 
@@ -272,7 +273,7 @@ test.r &lt;- (test.scaled$Diagnosis)*(max(data$Diagnosis)-min(data$Diagnosis))+m
 Results_of_Neural_Network &lt;- pr.nn_
 MSE.nn &lt;- sum((test.r - pr.nn_)^2)/nrow(test.scaled)
 print(MSE.nn)</code></pre>
-<pre><code>## [1] 1.040044138</code></pre>
+<pre><code>## [1] 1.683030207</code></pre>
 <pre class="r"><code># We now plot our results
 par(mfrow=c(1,2))
 plot(test$Diagnosis,Results_of_Neural_Network, col=&#39;blue&#39;,main=&#39;Real vs predicted NN&#39;,pch=18,cex=0.7)

@@ -204,7 +204,7 @@ names.all <- as.formula(paste("Diagnosis ~", paste(names[!names %in% "Diagnosis"
 nn <- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
 plot(nn)
 ```
-!(neural_network.png)
+![](neural_network.png)
 ```{r}
 # We compute our test data with the model  
 pr.nn <- compute(nn,test.scaled[ ,1:5])      

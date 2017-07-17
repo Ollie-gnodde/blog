@@ -10,6 +10,7 @@ tags: []
 
 
 <p>In this weeks project, we had to create an R package. We created one based on movies. You are able to discover movies using the discovr function after inputting genre, director, main actor and minimum imdb rating as well as obtaining the information about a movie using the searchr function.</p>
+<p>The Discovr function is shown directly below, while the Searchr function is shown below that.</p>
 <pre class="r"><code>movie_disc &lt;- function(genre = NA, rating = 0, director = NA, actor = NA) {
 
   if ( is.na(genre)) stop (&quot;Please enter a genre for your movie.&quot;, call. = FALSE)
@@ -30,4 +31,11 @@ tags: []
 
 
   movie_metadata$movie_title[ class1 ]
+}</code></pre>
+<pre class="r"><code>MovieFinder &lt;- function(movie_title_search){
+  library(dplyr)
+  if(!any(grepl(movie_title_search, movie_metadata$movie_title))) stop(&quot;This movie does not exist in this dataset&quot;)
+  searchMovie &lt;- filter(movie_metadata, grepl(movie_title_search, movie_metadata$movie_title))
+  select(searchMovie, movie_title, director_name, genres, actor_1_name, content_rating)
+
 }</code></pre>
