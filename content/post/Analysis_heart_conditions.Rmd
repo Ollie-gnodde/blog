@@ -6,20 +6,21 @@ slug: second-new-post-in-r-markdown
 categories: []
 tags: []
 ---
-# Intro
 
-Technology is advancing at an unbelievable rate, and one of the most exciting, not to mention important, fields that is benefitting from this is the field of Medicine. From CAT scans to cancer cures, science and technology is making the impossible possible with treatments and procedures so advanced and effective, they almost border on the mythical. There are however some drawbacks. One of the most common ones that is joked around the proverbial water-cooler is self diagnosis using technology. In this day and age, if you tell someone that you've got a sore throat and feel a little under the weather, you'll most likely be told "Don't Google your symptoms, it'll probably say you're pregnant!" 
+Technology is advancing at an unbelievable rate, and one of the most exciting, not to mention important, fields that is benefitting from this is the field of Medicine. From CAT scans to cancer cures, science and technology is making the impossible possible with treatments and procedures so advanced and effective, they almost border on the mythical. There are however some drawbacks. One of the most common ones that is joked around the proverbial water-cooler is self diagnosis using technology. In this day and age, if you tell someone that you've got a sore throat and feel a little under the weather, you'll most likely be told "Don't Google your symptoms, it'll probably say you're pregnant!"     
+.
 
-As a prospective data scientist, I find this situation worrying, if not highly offensive... How is it possible that we aren't able to accurately diagnose ourselves using the same advanced techniques that can effectively model the stock market, crime rates and pokemon cards?! And so, when the opportunity arose to find a data set, build a functional model and then use it to analyse said data set came up, I took it with both hands. 
+As a prospective data scientist, I find this situation worrying, if not highly offensive... How is it possible that we aren't able to accurately diagnose ourselves using the same advanced techniques that can effectively model the stock market, crime rates and pokemon cards?! And so, when the opportunity arose to find a data set, build a functional model and then use it to analyse said data set came up, I took it with both hands.    
+.
 
-Full disclosure... I have included the entire code (except for the part about the packages needed), so if you are a BA major, you may want to look away now; if not, you should find it helpful should you want to do something similar.
-
-# Code, models and some explanation
+Full disclosure... I have included the entire code (except for the part about the packages needed), so if you are a BA major, you may want to look away now; if not, you should find it helpful should you want to do something similar.   
+.
+.
 
 The first thing I had to do was to find some usable data. I settled on a set of just over 300 diagnoses of heart conditions, along with 13 possible factors sucg as age, max heart rate achieved under exercise and an ecg reading. These were factors that I expected to be highly correlated with heart conditions, and so expected a good model. If you are curious, you can find the data [here](https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data). The data is all numeric, so the heart diseases are ranked on a scale from 0 to 4, where 0 is completely healthy and 4 is an impending heart-attack. 
-
+.
 If you check out that link, you will see that it just leads to a bunch of numbers on a screen. I therefore had to scrape the website and then format the data (a decent amount of work given my relative inexperience in the field), which was done with the code below. Of course, before doing even that, we have to import the necessary libraries, which are 
-
+.
 library(rvest)
 library(stringr)
 library(dplyr)
@@ -29,7 +30,7 @@ library(vcdExtra)
 library(ipred)
 library(neuralnet)
 library(magrittr)
-
+.
 
 ```{r, include=FALSE}
 library(rvest)
@@ -80,15 +81,15 @@ data <- na.omit(data)
 head(data)
 ```
 
-
+.
 As you can see, the data comes out nicely in a data frame. Note that I have taken away all cells that contained "?" (there were a couple) as these would have messed up my models later. 
-
+.
 The first thing I decided to was to model it using a decision tree, as this is a fairly simple model, but one that deals well with a large number of factors. To do this, we make use of the Caret package. This not only makes implementation easy, but also bootstraps the data 25 times and gives us a very nice output off results.
-
+.
 In order to implement the model, we first divide our data in testing and training parts. I have opted for a 75/25 split, but it doesn't really matter as long as you have a split and the training set is in the significant majority. We do this so that we can realistically test our model. If you don't see why this is necessary, think of it like this... imagine trying to teach a child basic maths. You want to teach him addition, so you tell him 2 + 2 = 4, 2 + 3 = 5 and so on. If you then go back and test him by asking him 2 +2, he should (hopefully) say the answer is 4. However, you can't be sure if he has learnt addition, or if he just knows that 2 + 2 = 4. In order to test him, you ask a sum he hasn't seen before, like 2 + 4. If he answers 6, you're doing a good job... anything else, and not so much. 
-
+.
 Back to the code. We then train our model with Diagnosis as a finction of everything (thats what ~ . means) and instruct it to use the rpart method, which is a decision tree. The next two lines just show us the details and decision tree for the model. 
-
+.
 
 ```{r, echo=TRUE}
 #----------------------------------Training our model---------------------------------------------------
@@ -114,16 +115,16 @@ predict(data.rpart, test)
 confusionMatrix(predict(data.rpart, test), test$Diagnosis)
 
 ```
+.
 
-
-Looking at the output of the code, we see that we have 223 samples for the training set, with 13 predictors and 5 classes. This all sounds good. One interesting aspect of the rpart model is that it is able to give us different complexity parameters and their subsequent accuracy is used in the model. The complexity parameter is effectively a measurement of how deep your decision tree is. If this doesn't make sense, I suggest doing some background reading on it. We see that a complexity parameter of 0.028 gives us the highest level of accuracy, which is a worryingly low 53%. Not to worry however, as we haven't tested the model yet. We can also have a look at the decision tree. 
-
-We then moving on to testing our model. We use the predict command, which predicts the Diagnosis of the 75 remaining data points using the 13 factors. We can see the output. This is nice to see, but really that useful. What is useful however, is the confusion matrix. This shows us how many false/true positive/negatives were produced by the model on the testing data set, as well as he overall statistics. We can see the sensitivity and specificity for each result, as well as the overall accuracy. Our accuracy is 59.46%, which is surprisingly low given what we expected. 
-
-A low accuracy value is not the end of the world, for several reasons. The first of these is we have chosen an inappropriate model for the data set. Following this thinking, I tried a different tact. I ran a logistical regression model for two reasons. The first is that it is another model and so we might have success in that regard. The second is that it is able to tell you which factors have a larger impact on the model, and it is possible that having extraneous factors in your model will make in inaccurate. And so, we took it for a spin. 
-
-Once again, we divide the data into testing and training sets. A subtlety here is that the logistic model strictly takes numeric arguments, so we have to make sure the dataframe is a numeric one. Onc again we train the model as Diagnosis as a function of everything with the training data set and then we have a look.
-
+Looking at the output of the code, we see that we have 223 samples for the training set, with 13 predictors and 5 classes. This all sounds good. One interesting aspect of the rpart model is that it is able to give us different complexity parameters and their subsequent accuracy is used in the model. The complexity parameter is effectively a measurement of how deep your decision tree is. If this doesn't make sense, I suggest doing some background reading on it. We see which complexity parameter gives us the highest level of accuracy, which can be seen to be worryingly low here. Not to worry however, as we haven't tested the model yet. We can also have a look at the decision tree if we wish to. 
+.
+We then moving on to testing our model. We use the predict command, which predicts the Diagnosis of the 75 remaining data points using the 13 factors. We can see the output. This is nice to see, but really that useful. What is useful however, is the confusion matrix. This shows us how many false/true positive/negatives were produced by the model on the testing data set, as well as the overall statistics. We can see the sensitivity and specificity for each result, as well as the overall accuracy. Our accuracy is surprisingly low given that we expected the factors to be highly correlated to the output.   
+.
+A low accuracy value is not the end of the world, for several reasons. The first of these is we have chosen an inappropriate model for the data set. Following this thinking, I tried a different tact and so I ran a logistical regession model. This has two benefits. The first is that it is another model and so we may find it is accurate. However, it is also a rather simple model and as the decision tree failed, I was not hopeful. The main reason I ran it is that this model is able to tell you which factors are strongly correlated, and which are not, to the output. We want to know this because sometimes having extraneous factors in the model makes it less accurate, and so if we are able to cut some unnecessary ones, it should help. 
+.
+Once again, we divide the data into testing and training sets. A subtlety here is that the logistic model strictly takes numeric arguments, so we have to make sure the dataframe is a numeric one. Onc again we train the model as Diagnosis as a function of everything with the training data set and then we have a look.   
+.
 ```{r, echo=TRUE}
 #-----------------------------Using a Logistics model--------------------------------------------------
 
@@ -138,8 +139,64 @@ logistic <- glm(Diagnosis ~ . , data = train)
 summary(logistic)
 plot(logistic)
 ```
+.
+The first thing that we see when we examine the summary is that not all of our factors are important. We can see it in two ways. The technical way is to see which factor has a small (on the order of 10^(-3)) p factor. The slightly easier way is to look at the stars next to the factors... *** means important,   means not. I was happy to see that 8 of our factors seem to have little or no bearing on the model, and so we can take them out.    
+.
+I was less happy with the plots. As you can see, the model struggled to successfully model the data points. I was not discouraged however, as I had one more trick up my sleeve... the Neural Network. 
+
+```{r}
+#-------------------------Using a neural network---------------------------------------------------------
+
+#We first take away all superfluous data points to simplify our model
+data$Age = NULL
+data$Sex = NULL
+data$Blood_Pressure = NULL
+data$Cholestoral = NULL
+data$ecg = NULL
+data$Blood_Sugar = NULL
+data$Max_Heart_Rate = NULL
+data$eia = NULL
 
 
+# Normalize data. Different methods can be used (z-normalization, min-max). 
+# We use the min-max method and scale the data in interval [0, 1]
+maxs <- apply(data, 2, max)
+mins <- apply(data, 2, min)
+
+scaled <- as.data.frame(scale(data, center = TRUE, scale = maxs - mins))
+head(scaled)
+
+train.scaled <- scaled[index,]
+test.scaled <- scaled[-index,]
+
+# We now train the model
+names <- names(train.scaled)
+names.all <- as.formula(paste("Diagnosis ~", paste(names[!names %in% "Diagnosis"], collapse = " + ")))
+nn <- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
+plot(nn)
+
+
+# We compute our test data with the model  
+pr.nn <- compute(nn,test.scaled[ ,1:5])      
+#head(pr.nn)
+
+
+# We undo the normalization by scaling it back up and then calculate 
+# the Means Squared error
+pr.nn_ <- pr.nn$net.result*(max(data$Diagnosis)-min(data$Diagnosis))+min(data$Diagnosis)
+test.r <- (test.scaled$Diagnosis)*(max(data$Diagnosis)-min(data$Diagnosis))+min(data$Diagnosis)
+pr.nn_
+
+MSE.nn <- sum((test.r - pr.nn_)^2)/nrow(test.scaled)
+print(MSE.nn)
+
+
+# We now plot our results
+par(mfrow=c(1,2))
+plot(test$Diagnosis,pr.nn_, col='blue',main='Real vs predicted NN',pch=18,cex=0.7)
+abline(-1,1,lwd=2)
+legend('bottomright',legend='Neural Network',pch=18,col='blue', bty='n')
+```
 
 
 
