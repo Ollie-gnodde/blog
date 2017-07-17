@@ -1,0 +1,10 @@
+---
+title: Twitterbot
+author: ~
+date: '2017-07-17'
+slug: twitterbot
+categories: []
+tags: []
+---
+
+In this weeks project, we created a twitterbot that was able to send the weather of location if another twitter user mentioned it in a comment and speicified the location. The weatherbots handle is @twitterbot96, so give it a go!
