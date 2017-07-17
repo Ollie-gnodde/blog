@@ -1,0 +1,47 @@
+---
+title: R_package
+author: ~
+date: '2017-07-04'
+slug: r-package
+categories: []
+tags: []
+---
+In this weeks project, we had to create an R package. We created one based on movies. You are able to discover movies using the discovr function after inputting genre, director, main actor and minimum imdb rating as well as obtaining the information about a movie using the searchr function. 
+
+The Discovr function is shown directly below, while the Searchr function is shown below that. 
+
+```{r}
+movie_disc <- function(genre = NA, rating = 0, director = NA, actor = NA) {
+
+  if ( is.na(genre)) stop ("Please enter a genre for your movie.", call. = FALSE)
+
+ if (is.na(actor) & is.na(director)) {
+   class1 <- (movie_metadata$imdb_score >= rating) & grepl(genre, movie_metadata$genres)
+
+ }
+
+  else if (is.na(actor)) {
+   class1 <- (movie_metadata$imdb_score >= rating) & grepl(genre, movie_metadata$genres) & grepl(director, movie_metadata$director_name)
+
+ } else if (is.na(director)) {class1 <- (movie_metadata$imdb_score >= rating) & grepl(genre, movie_metadata$genres) & grepl(actor, movie_metadata$actor_1_name)
+
+ } else {class1 <- (movie_metadata$imdb_score >= rating) & grepl(genre, movie_metadata$genres) & grepl(director, movie_metadata$director_name) & grepl(actor, movie_metadata$actor_1_name)
+ }
+
+
+
+  movie_metadata$movie_title[ class1 ]
+}
+```
+
+```{r}
+
+MovieFinder <- function(movie_title_search){
+  library(dplyr)
+  if(!any(grepl(movie_title_search, movie_metadata$movie_title))) stop("This movie does not exist in this dataset")
+  searchMovie <- filter(movie_metadata, grepl(movie_title_search, movie_metadata$movie_title))
+  select(searchMovie, movie_title, director_name, genres, actor_1_name, content_rating)
+
+}
+```
+

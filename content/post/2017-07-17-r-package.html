@@ -1,0 +1,33 @@
+---
+title: R_package
+author: ~
+date: '2017-07-04'
+slug: r-package
+categories: []
+tags: []
+---
+
+
+
+<p>In this weeks project, we had to create an R package. We created one based on movies. You are able to discover movies using the discovr function after inputting genre, director, main actor and minimum imdb rating as well as obtaining the information about a movie using the searchr function.</p>
+<pre class="r"><code>movie_disc &lt;- function(genre = NA, rating = 0, director = NA, actor = NA) {
+
+  if ( is.na(genre)) stop (&quot;Please enter a genre for your movie.&quot;, call. = FALSE)
+
+ if (is.na(actor) &amp; is.na(director)) {
+   class1 &lt;- (movie_metadata$imdb_score &gt;= rating) &amp; grepl(genre, movie_metadata$genres)
+
+ }
+
+  else if (is.na(actor)) {
+   class1 &lt;- (movie_metadata$imdb_score &gt;= rating) &amp; grepl(genre, movie_metadata$genres) &amp; grepl(director, movie_metadata$director_name)
+
+ } else if (is.na(director)) {class1 &lt;- (movie_metadata$imdb_score &gt;= rating) &amp; grepl(genre, movie_metadata$genres) &amp; grepl(actor, movie_metadata$actor_1_name)
+
+ } else {class1 &lt;- (movie_metadata$imdb_score &gt;= rating) &amp; grepl(genre, movie_metadata$genres) &amp; grepl(director, movie_metadata$director_name) &amp; grepl(actor, movie_metadata$actor_1_name)
+ }
+
+
+
+  movie_metadata$movie_title[ class1 ]
+}</code></pre>
