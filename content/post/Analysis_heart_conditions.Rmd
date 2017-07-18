@@ -202,7 +202,6 @@ test.scaled <- scaled[-index,]
 names <- names(train.scaled)
 names.all <- as.formula(paste("Diagnosis ~", paste(names[!names %in% "Diagnosis"], collapse = " + ")))
 nn <- neuralnet(names.all,data=train.scaled,hidden=c(5,3),linear.output=T)
-plot(nn)
 
 # We compute our test data with the model  
 pr.nn <- compute(nn,test.scaled[ ,1:5])      
